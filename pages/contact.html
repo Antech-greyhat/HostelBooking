@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact Hostel Booking and view student FAQs." />
+  <title>Hostel Booking | Contact</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/style.css" />
+</head>
+<body data-page="contact">
+  <div class="loader" id="loader" aria-live="polite">
+    <div class="loader__ring"></div>
+    <p>Connecting support resources...</p>
+  </div>
+
+  <header class="header header--compact">
+    <nav class="navbar" aria-label="Main navigation">
+      <a href="index.html" class="logo">Hostel Booking</a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" data-page="home">Home</a>
+        <a href="universities.html" data-page="universities">Universities</a>
+        <a href="hostels.html" data-page="hostels">Hostels</a>
+        <a href="booking.html" data-page="booking">Booking</a>
+        <a href="contact.html" data-page="contact">Contact</a>
+      </div>
+
+    </nav>
+
+    <section class="page-hero container">
+      <p class="hero__eyebrow">Support and Guidance</p>
+      <h1>We Are Here to Help</h1>
+      <p>Reach out for booking support, hostel verification questions, or general student housing inquiries.</p>
+    </section>
+  </header>
+
+  <main>
+    <section class="section section--tint" id="testimonials">
+      <div class="container">
+        <div class="section__head">
+          <h2>Student Testimonials</h2>
+          <p>Experiences from students across partner institutions.</p>
+        </div>
+        <div class="testimonials-grid">
+          <article class="card testimonial">
+            <p>"I booked a hostel near Kisii University in under 10 minutes. The process was smooth and transparent."</p>
+            <h4>Akinyi M.</h4>
+          </article>
+          <article class="card testimonial">
+            <p>"The filters helped me get a budget room quickly at Murang'a University. Everything matched the listing."</p>
+            <h4>Brian K.</h4>
+          </article>
+          <article class="card testimonial">
+            <p>"I loved the verified options and quick support on WhatsApp. I found a secure place near Chuka University."</p>
+            <h4>Faith N.</h4>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section__head">
+          <h2>Frequently Asked Questions</h2>
+          <p>Click each question to view details.</p>
+        </div>
+
+        <div class="faq-list">
+          <article class="faq-item">
+            <button class="faq-question" type="button">How do I book a hostel?</button>
+            <div class="faq-answer">
+              <p>Go to the Hostels page, choose a hostel, then complete the Booking form.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button">Can I cancel a booking?</button>
+            <div class="faq-answer">
+              <p>Yes. Contact support through phone or WhatsApp as soon as possible for assistance.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button">Are hostels verified?</button>
+            <div class="faq-answer">
+              <p>All listed hostels are reviewed for student safety, basic amenities, and location accuracy.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button">Can I filter by budget?</button>
+            <div class="faq-answer">
+              <p>Yes. Use the max price filter and sorting options on the Hostels page.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tint" id="contact">
+      <div class="container contact-grid">
+        <div>
+          <div class="section__head section__head--left">
+            <h2>Contact Us</h2>
+            <p>Need help choosing a hostel? Reach out any time.</p>
+          </div>
+          <ul class="contact-list">
+            <li>Email: <a id="contactRecipientEmail" href="mailto:antechittech@gmail.com">antechittech@gmail.com</a></li>
+            <li>Phone: +254 714452396</li>
+            <li><a class="btn btn--whatsapp" href="https://wa.me/254714452396" target="_blank" rel="noopener">Chat on WhatsApp</a></li>
+          </ul>
+        </div>
+
+        <form class="card contact-form" id="contactForm" novalidate>
+          <div class="form-group">
+            <label for="contactName">Name</label>
+            <input type="text" id="contactName" required />
+          </div>
+          <div class="form-group">
+            <label for="contactEmail">Email</label>
+            <input type="email" id="contactEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--secondary btn--full">Send Message</button>
+          <p class="form-message" id="contactMessageStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__content">
+      <p>&copy; <span data-year></span> Hostel Booking. All rights reserved.</p>
+      <div class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="hostels.html">Hostels</a>
+        <a href="booking.html">Booking</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer__social" aria-label="Social placeholders">
+        <span>FB</span>
+        <span>IG</span>
+        <span>X</span>
+      </div>
+      <p>Designed for Kenyan University Students</p>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">Top</button>
+  <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+  <script src="../scripts/script.js"></script>
+</body>
+</html>

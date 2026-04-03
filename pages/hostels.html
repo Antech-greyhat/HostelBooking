@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Search and filter hostels near Kenyan universities." />
+  <title>Hostel Booking | Hostels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/style.css" />
+</head>
+<body data-page="hostels">
+  <div class="loader" id="loader" aria-live="polite">
+    <div class="loader__ring"></div>
+    <p>Loading hostel listings...</p>
+  </div>
+
+  <header class="header header--compact">
+    <nav class="navbar" aria-label="Main navigation">
+      <a href="index.html" class="logo">Hostel Booking</a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" data-page="home">Home</a>
+        <a href="universities.html" data-page="universities">Universities</a>
+        <a href="hostels.html" data-page="hostels">Hostels</a>
+        <a href="booking.html" data-page="booking">Booking</a>
+        <a href="contact.html" data-page="contact">Contact</a>
+      </div>
+
+    </nav>
+
+    <section class="page-hero container">
+      <p class="hero__eyebrow">Verified Listings</p>
+      <h1>Find the Right Hostel for Your Budget</h1>
+      <p>Use filters to compare prices, distance, and availability, then save favorites or book instantly.</p>
+    </section>
+  </header>
+
+  <main>
+    <section class="section section--tint" id="hostels">
+      <div class="container">
+        <div class="section__head">
+          <h2>Hostel Listings</h2>
+          <p>Search, filter, and compare verified hostels in minutes.</p>
+        </div>
+
+        <div class="filter-bar card">
+          <div class="filter-group">
+            <label for="searchInput">Search Hostel</label>
+            <input type="text" id="searchInput" placeholder="Type hostel name..." />
+          </div>
+
+          <div class="filter-group">
+            <label for="universityFilter">University</label>
+            <select id="universityFilter">
+              <option value="all">All Universities</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="priceFilter">Max Price (KES): <span id="priceValue">15000</span></label>
+            <input type="range" id="priceFilter" min="4000" max="15000" step="500" value="15000" />
+          </div>
+
+          <div class="filter-group">
+            <label for="availabilityFilter">Availability</label>
+            <select id="availabilityFilter">
+              <option value="all">All</option>
+              <option value="available">Available</option>
+              <option value="booked">Fully Booked</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="sortFilter">Sort By</label>
+            <select id="sortFilter">
+              <option value="default">Recommended</option>
+              <option value="price-asc">Lowest Price</option>
+              <option value="price-desc">Highest Price</option>
+              <option value="distance-asc">Nearest Distance</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hostel-grid" id="hostelsGrid" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__content">
+      <p>&copy; <span data-year></span> Hostel Booking. All rights reserved.</p>
+      <div class="footer__links">
+        <a href="index.html">Home</a>
+        <a href="hostels.html">Hostels</a>
+        <a href="booking.html">Booking</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer__social" aria-label="Social placeholders">
+        <span>FB</span>
+        <span>IG</span>
+        <span>X</span>
+      </div>
+      <p>Designed for Kenyan University Students</p>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">Top</button>
+  <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+  <div class="modal" id="hostelModal" aria-hidden="true">
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" id="modalClose" aria-label="Close details">&times;</button>
+      <div class="modal__gallery">
+        <button class="gallery-btn" id="galleryPrev" aria-label="Previous image">&#10094;</button>
+        <img id="galleryImage" src="" alt="Hostel preview" />
+        <button class="gallery-btn" id="galleryNext" aria-label="Next image">&#10095;</button>
+      </div>
+      <h3 id="modalTitle"></h3>
+      <p id="modalMeta"></p>
+      <p id="modalAmenities"></p>
+    </div>
+  </div>
+
+  <script src="../scripts/script.js"></script>
+</body>
+</html>
