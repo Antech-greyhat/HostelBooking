@@ -9,16 +9,18 @@ A modern student-hostel discovery and booking web app for Kenyan campuses, with 
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Quick Start](#quick-start)
-- [Environment Variables](#environment-variables)
-- [Chat API](#chat-api)
-- [Pages](#pages)
-- [Troubleshooting](#troubleshooting)
-- [Security Notes](#security-notes)
+| Section | What You Will Find |
+| --- | --- |
+| [Overview](#overview) | Purpose, scope, and high-level app setup |
+| [Key Features](#key-features) | Core capabilities of the platform |
+| [Architecture](#architecture) | Frontend-backend-Groq flow diagram |
+| [Project Structure](#project-structure) | Folder layout and file responsibilities |
+| [Quick Start](#quick-start) | Installation and local run steps |
+| [Environment Variables](#environment-variables) | Configurable runtime settings |
+| [Chat API](#chat-api) | Endpoint contract with payload examples |
+| [Pages](#pages) | Main web pages and their paths |
+| [Troubleshooting](#troubleshooting) | Common issues and practical fixes |
+| [Security Notes](#security-notes) | Key-handling and deployment safety guidance |
 
 ## Overview
 
@@ -45,7 +47,7 @@ This project is split into:
 ```mermaid
 flowchart LR
   A[Browser UI] --> B[Express Server]
-  B --> C[/api/chat route]
+  B --> C["/api/chat route"]
   C --> D[Prompt + History Normalizer]
   D --> E[Groq Chat Completions API]
   E --> C
