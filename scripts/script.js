@@ -579,7 +579,7 @@ function queueBookingFromCard(hostelId) {
     })
   );
 
-  window.location.href = "booking.html";
+  window.location.href = "/pages/booking.html";
 }
 
 function openModal(hostelId) {

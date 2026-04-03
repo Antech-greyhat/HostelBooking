@@ -5,8 +5,8 @@ const path = require("path");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const ROOT_DIR = __dirname;
-const PUBLIC_DIR = path.join(ROOT_DIR);
+const ROOT_DIR = path.join(__dirname, "..");
+const PUBLIC_DIR = ROOT_DIR;
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
 const RESPONSE_MAX_TOKENS = Number(process.env.RESPONSE_MAX_TOKENS) || 120;
 const MAX_HISTORY_MESSAGES = 10;
