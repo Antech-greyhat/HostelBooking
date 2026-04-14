@@ -10,6 +10,36 @@ const PUBLIC_DIR = ROOT_DIR;
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
 const RESPONSE_MAX_TOKENS = Number(process.env.RESPONSE_MAX_TOKENS) || 120;
 const MAX_HISTORY_MESSAGES = 10;
+const SITE_TOPIC_KEYWORDS = [
+  "hostel",
+  "hostels",
+  "booking",
+  "book",
+  "reserve",
+  "university",
+  "universities",
+  "campus",
+  "price",
+  "budget",
+  "cost",
+  "availability",
+  "available",
+  "contact",
+  "support",
+  "help",
+  "filter",
+  "distance",
+  "deposit",
+  "check-in",
+  "favorite",
+  "favourite",
+  "save",
+  "site",
+  "website",
+  "page",
+  "menu"
+];
+const SITE_TOPIC_REFUSAL = "I can only help with this hostel booking website, including hostels, prices, availability, booking, universities, and contact support.";
 
 const groqApiKey = (process.env.GROQ_API_KEY || "").trim();
 
@@ -37,10 +67,16 @@ function normalizeHistory(rawHistory) {
     .map((entry) => ({ role: entry.role, content: entry.content.trim() }));
 }
 
+function isSiteRelatedQuery(message) {
+  const text = String(message || "").toLowerCase();
+
+  return SITE_TOPIC_KEYWORDS.some((keyword) => text.includes(keyword));
+}
+
 function buildPrompt() {
   return [
     "You are a helpful assistant for a Kenyan student hostel booking website.",
-    "Give concise, practical answers about hostels, prices, booking flow, deposits, and contact support.",
+    `Only answer questions about this website's hostels, prices, availability, booking flow, universities, and contact support. If the user asks about anything else, politely refuse and redirect them to website help.`,
     "Keep answers short, precise, and easy to understand.",
     "Target 1-3 short sentences and around 60 words or less whenever possible.",
     "Give the direct answer first, then one practical next step if needed.",
@@ -52,6 +88,10 @@ function buildPrompt() {
 
 function getDemoReply(userMessage) {
   const text = userMessage.toLowerCase();
+
+  if (!isSiteRelatedQuery(text)) {
+    return SITE_TOPIC_REFUSAL;
+  }
 
   if (text.includes("price") || text.includes("budget") || text.includes("cost") || text.includes("kes")) {
     return "Most listings on this site are in the KES 5,600 to KES 9,800 range per month. Use the Hostels page filters to set your max budget and sort by lowest price.";
@@ -136,6 +176,14 @@ app.post("/api/chat", async (req, res) => {
 
   if (!userMessage) {
     res.status(400).json({ error: "A non-empty message is required." });
+    return;
+  }
+
+  if (!isSiteRelatedQuery(userMessage)) {
+    res.json({
+      reply: SITE_TOPIC_REFUSAL,
+      mode: "site-only"
+    });
     return;
   }
 

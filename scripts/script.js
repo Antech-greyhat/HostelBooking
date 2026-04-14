@@ -366,6 +366,41 @@ const CHATBOT_API_ENDPOINT = "/api/chat";
 const CHATBOT_STORAGE_KEY = "hostelChatHistory";
 const CHATBOT_MAX_HISTORY = 10;
 const CHATBOT_THINKING_MS = 5000;
+const CHATBOT_FAILURE_MESSAGES = new Set([
+  "Chat service is unavailable right now.",
+  "Unable to get a response right now.",
+  "The AI service is temporarily unavailable. You can still browse hostels, filter by budget, and submit your booking form as normal."
+]);
+const SITE_TOPIC_KEYWORDS = [
+  "hostel",
+  "hostels",
+  "booking",
+  "book",
+  "reserve",
+  "university",
+  "universities",
+  "campus",
+  "price",
+  "budget",
+  "cost",
+  "availability",
+  "available",
+  "contact",
+  "support",
+  "help",
+  "filter",
+  "distance",
+  "deposit",
+  "check-in",
+  "favorite",
+  "favourite",
+  "save",
+  "site",
+  "website",
+  "page",
+  "menu"
+];
+const SITE_TOPIC_REFUSAL = "I can only help with this hostel booking website, including hostels, prices, availability, booking, universities, and contact support.";
 
 const MOBILE_DRAWER_ANIMATION_MS = 260;
 
@@ -1023,7 +1058,13 @@ function getStoredChatHistory() {
     }
 
     return parsed
-      .filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")
+      .filter(
+        (item) =>
+          item &&
+          (item.role === "user" || item.role === "assistant") &&
+          typeof item.content === "string" &&
+          !CHATBOT_FAILURE_MESSAGES.has(item.content.trim())
+      )
       .slice(-CHATBOT_MAX_HISTORY * 2);
   } catch (error) {
     console.error("Could not read chatbot history", error);
@@ -1083,32 +1124,64 @@ function setChatbotStatus(statusNode, message) {
   statusNode.textContent = message;
 }
 
+function isSiteRelatedQuery(message) {
+  const text = String(message || "").toLowerCase();
+
+  return SITE_TOPIC_KEYWORDS.some((keyword) => text.includes(keyword));
+}
+
+function getLocalChatbotReply(message) {
+  const text = message.toLowerCase();
+
+  if (!isSiteRelatedQuery(text)) {
+    return SITE_TOPIC_REFUSAL;
+  }
+
+  if (text.includes("price") || text.includes("budget") || text.includes("cost") || text.includes("kes")) {
+    return "Most listings on this site are in the KES 5,600 to KES 9,800 range per month. Use the Hostels page filters to set your max budget and sort by lowest price.";
+  }
+
+  if (text.includes("book") || text.includes("booking") || text.includes("reserve")) {
+    return "To book: open Hostels, choose an available listing, click Book Hostel, then complete the Booking form with your details, deposit, and check-in date.";
+  }
+
+  if (text.includes("contact") || text.includes("support") || text.includes("help") || text.includes("phone") || text.includes("email")) {
+    return "You can reach support from the Contact page via email at antechittech@gmail.com or phone +254 714452396.";
+  }
+
+  if (text.includes("university") || text.includes("campus")) {
+    return "Use the Universities page to select your institution, then jump directly to hostels near that campus.";
+  }
+
+  return "I can help with hostel prices, booking steps, and contact info. If you want AI-powered answers, run the app with the backend server and set GROQ_API_KEY in .env.";
+}
+
 async function requestChatbotReply(message, history) {
-  const response = await fetch(CHATBOT_API_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message,
-      history
-    })
-  });
+  try {
+    const response = await fetch(CHATBOT_API_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message,
+        history
+      })
+    });
 
-  if (!response.ok) {
-    const errorPayload = await response.json().catch(() => ({}));
-    const detail = typeof errorPayload.error === "string" ? errorPayload.error : "Chat service is unavailable right now.";
-    throw new Error(detail);
+    if (response.ok) {
+      const payload = await response.json();
+      const reply = typeof payload.reply === "string" ? payload.reply.trim() : "";
+
+      if (reply) {
+        return reply;
+      }
+    }
+  } catch (error) {
+    console.warn("Falling back to local chatbot reply", error);
   }
 
-  const payload = await response.json();
-  const reply = typeof payload.reply === "string" ? payload.reply.trim() : "";
-
-  if (!reply) {
-    throw new Error("The assistant returned an empty response.");
-  }
-
-  return reply;
+  return getLocalChatbotReply(message);
 }
 
 function initChatbot() {
@@ -1225,9 +1298,12 @@ function initChatbot() {
     } catch (error) {
       await waitForThinkingMinimum(startedAt);
       typingNode.remove();
-      const fallback = error instanceof Error ? error.message : "Chat service is currently unavailable.";
+      const fallback = getLocalChatbotReply(message);
       appendChatMessage(messagesNode, "assistant", fallback, true);
-      setChatbotStatus(statusNode, "Unable to get a response right now.");
+      const updatedHistory = [...history, { role: "assistant", content: fallback }].slice(-CHATBOT_MAX_HISTORY * 2);
+      history.splice(0, history.length, ...updatedHistory);
+      saveChatHistory(history);
+      setChatbotStatus(statusNode, "Showing a local reply.");
     } finally {
       sendButton.disabled = false;
       input.disabled = false;
