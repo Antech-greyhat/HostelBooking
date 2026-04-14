@@ -1,3 +1,82 @@
+const rongoImagePath = (fileName) => `/Assets/Images%20Rongo%20Uni/${encodeURIComponent(fileName)}`;
+
+const rongoHostelImages = [
+  "WhatsApp Image 2026-04-14 at 17.17.38.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.39 (1).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.39 (2).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.39.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.40 (1).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.40.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.41 (2).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.41.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.42.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.43.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.44.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.45.jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.46 (1).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.46 (2).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.47 (1).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.49 (1).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.49 (2).jpeg",
+  "WhatsApp Image 2026-04-14 at 17.17.49.jpeg"
+];
+
+const rongoHostelProfiles = [
+  {
+    location: "Rongo Town",
+    price: 5600,
+    distance: 0.5,
+    amenities: ["Water", "Security", "Wi-Fi", "Study Area"]
+  },
+  {
+    location: "Rongo Town",
+    price: 6200,
+    distance: 0.7,
+    amenities: ["Electricity", "Water", "Furnished Room", "Wi-Fi"]
+  },
+  {
+    location: "Rongo-Migori Highway",
+    price: 6800,
+    distance: 1,
+    amenities: ["Hot Shower", "Security", "Study Area", "Water"]
+  },
+  {
+    location: "Opapo, Migori",
+    price: 5400,
+    distance: 1.6,
+    amenities: ["Shared Kitchen", "Water", "Security", "Wardrobe"]
+  },
+  {
+    location: "Kamagambo, Rongo",
+    price: 5900,
+    distance: 1.2,
+    amenities: ["Wi-Fi", "Electricity", "Laundry", "Study Area"]
+  },
+  {
+    location: "Rongo Town",
+    price: 6400,
+    distance: 0.9,
+    amenities: ["Water", "Furnished Room", "Security", "Mini Market Nearby"]
+  }
+];
+
+const rongoHostels = rongoHostelImages.map((imageName, index) => {
+  const profile = rongoHostelProfiles[index % rongoHostelProfiles.length];
+
+  return {
+    id: 13 + index,
+    hostelName: `Rongo Hostel ${String(index + 1).padStart(2, "0")}`,
+    university: "Rongo University",
+    location: profile.location,
+    price: profile.price + Math.floor(index / rongoHostelProfiles.length) * 300,
+    distance: Number((profile.distance + (index % 3) * 0.1).toFixed(1)),
+    amenities: profile.amenities,
+    image: rongoImagePath(imageName),
+    gallery: [rongoImagePath(imageName)],
+    available: true
+  };
+});
+
 const hostels = [
   {
     id: 1,
@@ -191,54 +270,7 @@ const hostels = [
     ],
     available: false
   },
-  {
-    id: 13,
-    hostelName: "Rongo Prime Hostels",
-    university: "Rongo University",
-    location: "Rongo Town",
-    price: 6200,
-    distance: 0.9,
-    amenities: ["Water", "Security", "Study Area", "Wi-Fi"],
-    image: "https://picsum.photos/seed/rongo1/700/400",
-    gallery: [
-      "https://picsum.photos/seed/rongo1a/900/500",
-      "https://picsum.photos/seed/rongo1b/900/500",
-      "https://picsum.photos/seed/rongo1c/900/500"
-    ],
-    available: true
-  },
-  {
-    id: 14,
-    hostelName: "Migori Corner Residences",
-    university: "Rongo University",
-    location: "Rongo-Migori Highway",
-    price: 8100,
-    distance: 1.4,
-    amenities: ["Electricity", "Water", "Furnished Room", "Wi-Fi"],
-    image: "https://picsum.photos/seed/rongo2/700/400",
-    gallery: [
-      "https://picsum.photos/seed/rongo2a/900/500",
-      "https://picsum.photos/seed/rongo2b/900/500",
-      "https://picsum.photos/seed/rongo2c/900/500"
-    ],
-    available: true
-  },
-  {
-    id: 15,
-    hostelName: "South Nyanza Homes",
-    university: "Rongo University",
-    location: "Opapo, Migori",
-    price: 5600,
-    distance: 2.2,
-    amenities: ["Water", "Shared Kitchen", "Security", "Study Space"],
-    image: "https://picsum.photos/seed/rongo3/700/400",
-    gallery: [
-      "https://picsum.photos/seed/rongo3a/900/500",
-      "https://picsum.photos/seed/rongo3b/900/500",
-      "https://picsum.photos/seed/rongo3c/900/500"
-    ],
-    available: true
-  },
+  ...rongoHostels,
   {
     id: 16,
     hostelName: "Polytechnic Plaza",
