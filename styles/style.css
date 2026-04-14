@@ -501,6 +501,19 @@ textarea:focus {
   font-weight: 600;
 }
 
+.booking-payment-note {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(13, 92, 171, 0.08);
+  border: 1px solid rgba(13, 92, 171, 0.16);
+  color: var(--muted);
+}
+
+.booking-payment-note strong {
+  color: var(--text);
+}
+
 .testimonial p {
   margin-bottom: 12px;
 }

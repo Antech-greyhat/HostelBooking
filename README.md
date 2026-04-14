@@ -28,12 +28,13 @@ This project is split into:
 
 - Frontend static app (HTML, CSS, vanilla JS) served by Express.
 - Backend API for chatbot replies at `/api/chat`.
+- Backend API for M-Pesa STK Push initiation and callback handling.
 - Groq LLM integration with concise response controls and fallback mode.
 
 ## Key Features
 
 - University-based hostel browsing and filtering.
-- Hostel booking workflow with local state persistence.
+- Hostel booking workflow with M-Pesa STK Push initiation and pending payment storage.
 - Contact and FAQ sections for student support.
 - AI assistant widget with:
   - animated reply reveal,
@@ -96,6 +97,16 @@ GROQ_API_KEY=your_groq_api_key_here
 GROQ_MODEL=llama-3.1-8b-instant
 RESPONSE_MAX_TOKENS=120
 PORT=3000
+
+MPESA_ENV=sandbox
+MPESA_CONSUMER_KEY=your_mpesa_consumer_key
+MPESA_CONSUMER_SECRET=your_mpesa_consumer_secret
+MPESA_SHORTCODE=your_paybill_or_till_number
+MPESA_PASSKEY=your_daraja_passkey
+MPESA_CALLBACK_URL=https://your-public-domain.example.com/api/mpesa/callback
+MPESA_ACCOUNT_REFERENCE=HostelBooking
+MPESA_TRANSACTION_DESC=Hostel deposit payment
+MPESA_TRANSACTION_TYPE=CustomerPayBillOnline
 ```
 
 ### 3. Run the app
@@ -116,6 +127,15 @@ Then open:
 | `GROQ_MODEL` | No | `llama-3.1-8b-instant` | Model used for chat generation |
 | `RESPONSE_MAX_TOKENS` | No | `120` | Upper token cap for concise responses |
 | `PORT` | No | `3000` | Server port |
+| `MPESA_ENV` | No | `sandbox` | Daraja environment to use: `sandbox` or `production` |
+| `MPESA_CONSUMER_KEY` | Yes for live payments | - | Daraja app consumer key |
+| `MPESA_CONSUMER_SECRET` | Yes for live payments | - | Daraja app consumer secret |
+| `MPESA_SHORTCODE` | Yes for live payments | - | Paybill or till number used for STK Push |
+| `MPESA_PASSKEY` | Yes for live payments | - | Daraja passkey for the shortcode |
+| `MPESA_CALLBACK_URL` | Yes for live payments | - | Publicly reachable callback endpoint for payment confirmation |
+| `MPESA_ACCOUNT_REFERENCE` | No | `HostelBooking` | Reference shown in the STK request |
+| `MPESA_TRANSACTION_DESC` | No | `Hostel deposit payment` | Payment description shown on the prompt |
+| `MPESA_TRANSACTION_TYPE` | No | `CustomerPayBillOnline` | Daraja transaction type |
 
 ## Chat API
 
@@ -150,6 +170,49 @@ Possible `mode` values:
 - `demo` (no key configured)
 - `fallback` (provider temporarily unavailable)
 
+## M-Pesa API
+
+### Endpoint
+
+- `POST /api/mpesa/stkpush`
+
+### Request body
+
+```json
+{
+  "fullName": "Amina Otieno",
+  "email": "amina@example.com",
+  "phone": "0712345678",
+  "deposit": 3000,
+  "university": "Rongo University",
+  "hostel": "Rongo Hostel 01",
+  "checkInDate": "2026-05-01",
+  "duration": "3 months",
+  "gender": "Female",
+  "notes": "Ground-floor room preferred"
+}
+```
+
+### Response shape
+
+```json
+{
+  "success": true,
+  "message": "M-Pesa prompt sent. Check your phone and approve the payment.",
+  "checkoutRequestId": "ws_CO_1234567890",
+  "merchantRequestId": "12345-67890-1",
+  "booking": {
+    "fullName": "Amina Otieno"
+  }
+}
+```
+
+### Callback endpoint
+
+- `POST /api/mpesa/callback`
+
+Safaricom must be able to reach the callback URL you set in `.env`. For local development, use a tunnel such as ngrok or Cloudflare Tunnel and point `MPESA_CALLBACK_URL` to the public HTTPS URL.
+
 ## Pages
 
 - Home: [pages/index.html](pages/index.html)
@@ -174,6 +237,12 @@ npm start
 
 - Ensure `GROQ_API_KEY` is set in `.env`.
 - Restart the server after any `.env` change.
+
+### M-Pesa request fails immediately
+
+- Confirm `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`, `MPESA_SHORTCODE`, `MPESA_PASSKEY`, and `MPESA_CALLBACK_URL` are set.
+- Use a publicly reachable HTTPS callback URL.
+- Check that the shortcode and passkey belong to the same Daraja app.
 
 ### Styles or scripts not loading
 

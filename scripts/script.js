@@ -334,6 +334,7 @@ const sortFilter = byId("sortFilter");
 const hostelsGrid = byId("hostelsGrid");
 const bookingForm = byId("bookingForm");
 const bookingMessage = byId("bookingMessage");
+const bookingSubmitButton = byId("bookingSubmitButton");
 const bookingUniversity = byId("bookingUniversity");
 const bookingHostel = byId("bookingHostel");
 const toast = byId("toast");
@@ -371,6 +372,7 @@ const CHATBOT_FAILURE_MESSAGES = new Set([
   "Unable to get a response right now.",
   "The AI service is temporarily unavailable. You can still browse hostels, filter by budget, and submit your booking form as normal."
 ]);
+const BOOKING_PAYMENT_ENDPOINT = "/api/mpesa/stkpush";
 const SITE_TOPIC_KEYWORDS = [
   "hostel",
   "hostels",
@@ -746,7 +748,16 @@ function validateBookingForm() {
   return "";
 }
 
-function saveBooking() {
+function setBookingMessage(message, color) {
+  if (!bookingMessage) {
+    return;
+  }
+
+  bookingMessage.textContent = message;
+  bookingMessage.style.color = color;
+}
+
+function saveBooking(paymentDetails = {}) {
   if (!bookingUniversity || !bookingHostel) {
     return;
   }
@@ -764,10 +775,49 @@ function saveBooking() {
     duration: byId("duration").value,
     gender: byId("gender").value,
     notes: byId("notes").value.trim(),
+    paymentStatus: paymentDetails.paymentStatus || "pending",
+    paymentMode: paymentDetails.paymentMode || "mpesa-stk",
+    paymentReference: paymentDetails.paymentReference || "",
+    merchantRequestId: paymentDetails.merchantRequestId || "",
+    checkoutRequestId: paymentDetails.checkoutRequestId || "",
+    paymentMessage: paymentDetails.paymentMessage || "",
     bookedAt: new Date().toISOString()
   });
 
   localStorage.setItem("hostelBookings", JSON.stringify(bookings));
+}
+
+function buildBookingPaymentPayload() {
+  return {
+    fullName: byId("fullName").value.trim(),
+    email: byId("email").value.trim(),
+    phone: byId("phone").value.trim(),
+    deposit: Number(byId("deposit").value),
+    university: bookingUniversity.value,
+    hostel: bookingHostel.value,
+    checkInDate: byId("checkInDate").value,
+    duration: byId("duration").value,
+    gender: byId("gender").value,
+    notes: byId("notes").value.trim()
+  };
+}
+
+async function startMpesaBookingPayment() {
+  const response = await fetch(BOOKING_PAYMENT_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(buildBookingPaymentPayload())
+  });
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(payload.error || "Unable to start the M-Pesa payment.");
+  }
+
+  return payload;
 }
 
 function initSmoothScroll() {
@@ -906,22 +956,44 @@ function initBookingForm() {
     populateHostelSelect();
   });
 
-  bookingForm.addEventListener("submit", (event) => {
+  bookingForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const error = validateBookingForm();
 
     if (error) {
-      bookingMessage.textContent = error;
-      bookingMessage.style.color = "#d84949";
+      setBookingMessage(error, "#d84949");
       return;
     }
 
-    saveBooking();
-    bookingMessage.textContent = "Booking submitted successfully. We will contact you shortly.";
-    bookingMessage.style.color = "#15965a";
-    showToast("Booking submitted successfully");
-    bookingForm.reset();
-    populateHostelSelect();
+    if (bookingSubmitButton) {
+      bookingSubmitButton.disabled = true;
+      bookingSubmitButton.textContent = "Sending M-Pesa Prompt...";
+    }
+
+    setBookingMessage("Sending M-Pesa prompt to the phone number you entered...", "#0d5cab");
+
+    try {
+      const payment = await startMpesaBookingPayment();
+
+      saveBooking({
+        paymentStatus: "pending",
+        paymentMode: "mpesa-stk",
+        paymentReference: payment.requestId || payment.checkoutRequestId || "",
+        merchantRequestId: payment.merchantRequestId || "",
+        checkoutRequestId: payment.checkoutRequestId || "",
+        paymentMessage: payment.message || payment.customerMessage || ""
+      });
+
+      setBookingMessage(payment.message || "M-Pesa prompt sent. Check your phone and approve the payment.", "#15965a");
+      showToast("M-Pesa prompt sent");
+    } catch (error) {
+      setBookingMessage(error instanceof Error ? error.message : "Unable to start the M-Pesa payment.", "#d84949");
+    } finally {
+      if (bookingSubmitButton) {
+        bookingSubmitButton.disabled = false;
+        bookingSubmitButton.textContent = "Pay Deposit with M-Pesa";
+      }
+    }
   });
 }
 

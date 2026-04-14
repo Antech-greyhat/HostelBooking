@@ -111,7 +111,10 @@
               <textarea id="notes" name="notes" rows="4" placeholder="Any room preference or special request?"></textarea>
             </div>
           </div>
-          <button type="submit" class="btn btn--primary btn--full">Submit Booking</button>
+          <div class="booking-payment-note" id="bookingPaymentNote">
+            <strong>M-Pesa payment:</strong> submitting this form sends an STK Push to the phone number you enter. Keep the handset nearby and approve the prompt.
+          </div>
+          <button type="submit" class="btn btn--primary btn--full" id="bookingSubmitButton">Pay Deposit with M-Pesa</button>
           <p class="form-message" id="bookingMessage" role="status" aria-live="polite"></p>
         </form>
       </div>
